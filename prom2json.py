@@ -7,8 +7,6 @@ try:
 except ImportError:
     sys.exit("Failed to import requests library, `pip install requests`")
 
-DEVMODE=True
-
 HOSTNAME="localhost"
 PORT=40355
 if len(sys.argv) == 2:
@@ -17,17 +15,13 @@ elif len(sys.argv) == 1:
     PORT = sys.argv[0]
 
 URL=f"http://{HOSTNAME}:{PORT}/metrics"
-print(URL)
 
-if DEVMODE:
-    lines = open("data.prom", "r").read().split("\n")
-else:
-	try:
-	   response = requests.get(URL)
-	   response.raise_for_status()
-	except Exception as error_message:
-	   sys.exit(f"Failed to query {URL}, bailing - error: {error_message}")
-	lines = response.text.split("\n")
+try:
+   response = requests.get(URL)
+   response.raise_for_status()
+except Exception as error_message:
+   sys.exit(f"Failed to query {URL}, bailing - error: {error_message}")
+lines = response.text.split("\n")
 
 data = {}
 for line in lines:
